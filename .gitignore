@@ -1,2 +1,5 @@
 # Project exclude paths
 /flume/target/
+*.iml
+.idea
+/*/target

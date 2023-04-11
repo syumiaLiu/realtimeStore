@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>flume</module>
+        <module>flink</module>
+        <module>core</module>
     </modules>
 
     <properties>
