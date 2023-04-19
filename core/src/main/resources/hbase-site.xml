@@ -92,7 +92,7 @@
   <value>0.0.0.0</value>
 </property>
 <property>
-  <name>phoenix.schema.isNamespaceMappingEnable</name>
+  <name>phoenix.schema.isNamespaceMappingEnabled</name>
   <value>true</value>
 </property>
 <property>
