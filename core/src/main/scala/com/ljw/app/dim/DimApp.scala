@@ -1,6 +1,7 @@
 package com.ljw.app.dim
 
 import com.ljw.bean.TableProcessConfig
+import com.ljw.utils.FlinkEnvUtil.{checkpointConfigInti, createLocalEnv}
 import com.ljw.utils.KafkaUtils
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.api.common.restartstrategy.RestartStrategies
@@ -15,10 +16,7 @@ object DimApp {
 
   def main(args: Array[String]): Unit = {
     //    val env = StreamExecutionEnvironment.getExecutionEnvironment
-    val conf = new Configuration
-    conf setInteger ("rest.port",9091)
-    val env = StreamExecutionEnvironment
-      .createLocalEnvironmentWithWebUI(conf)
+    val env =  createLocalEnv()
 //    env.enableCheckpointing(3000)
     //only for test,cdc will read binlog after a success checkpoint.
     checkpointConfigInti(env)
@@ -48,13 +46,4 @@ object DimApp {
     env.execute("dim filter")
   }
 
-  def checkpointConfigInti(env: StreamExecutionEnvironment): Unit = {
-    env enableCheckpointing(300 * 1000, CheckpointingMode.EXACTLY_ONCE)
-    env.getCheckpointConfig.setCheckpointTimeout(300 * 1000)
-    env.getCheckpointConfig.setMaxConcurrentCheckpoints(2)
-    env setRestartStrategy RestartStrategies.fixedDelayRestart(3, 5000L)
-
-    //    env setStateBackend new HashMapStateBackend()
-    //    env.getCheckpointConfig.setCheckpointStorage("hdfs://hadoop01:9820/checkpoints")
-  }
 }

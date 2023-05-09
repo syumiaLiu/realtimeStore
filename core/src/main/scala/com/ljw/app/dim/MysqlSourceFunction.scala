@@ -3,12 +3,10 @@ package com.ljw.app.dim
 import com.ververica.cdc.connectors.mysql.source.MySqlSource
 import com.ververica.cdc.connectors.mysql.table.StartupOptions
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema
+import com.ljw.common.MysqlConfig._
 
 object MysqlSourceFunction {
-    val host = "hadoop01"
-    val port = 3306
-    val username = "maxwell"
-    val password = "maxwell"
+
     val table = "test"
     def createMysqlSource(host: String, port: Int,
                           username: String , password: String ,

@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkFixedPartitioner
 
 class KafkaUtils {
-  private val bootstrap = "112.124.36.125:9092"
+  private val bootstrap = "hadoop01:9092"
   private val group = "group1"
   def createDataStream(bootstrap: String,topic:String,group: String): KafkaSource[String] = {
       KafkaSource.builder[String]()
@@ -44,5 +44,20 @@ class KafkaUtils {
   def createSink(topic: String): KafkaSink[String] = {
     createSink(bootstrap,topic)
   }
+
+  def createDDLSource(bootstrap: String,topic:String,group: String): String = s"with ('connector' = 'kafka' , 'topic' = '${topic}' , 'properties.bootstrap.servers' = " +
+    s"'${bootstrap}', 'format' = 'json' , 'properties.group.id' = '${group}' , 'scan.startup.mode' = 'latest-offset')"
+
+  def createDDLSink(bootstrap: String,topic:String) = s"with ('connector' = 'kafka' , 'topic' = '$topic' , 'properties.bootstrap.servers' = '$bootstrap' ,'format' = 'json')"
+
+  def createUpsertDDLSink(bootstrap: String,topic:String) = s"with ('connector' = 'upsert-kafka' , 'topic' = '$topic' , 'properties.bootstrap.servers' = '$bootstrap' ," +
+    s"'key.format' = 'json', 'value.format' = 'json')"
+
+  def createUpsertDDLSink(topic: String): String = createUpsertDDLSink(bootstrap,topic)
+  def createDDLSource(topic:String, group: String): String = createDDLSource(bootstrap, topic, group)
+
+  def createDDLSource(topic:String): String = createDDLSource(bootstrap, topic, group)
+
+  def createDDLSink(topic:String): String = createDDLSink(bootstrap, topic)
 
 }
