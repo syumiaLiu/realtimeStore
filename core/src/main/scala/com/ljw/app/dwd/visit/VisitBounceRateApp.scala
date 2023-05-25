@@ -20,8 +20,7 @@ object VisitBounceRateApp {
     val env = createLocalEnv()
     checkpointConfigInti(env)
     useHDFSBackend(env)
-    val kafkaUtils = new KafkaUtils
-    val source: DataStream[String] = env fromSource(kafkaUtils.createDataStream(page_topic), WatermarkStrategy.noWatermarks(), "page source")
+    val source: DataStream[String] = env fromSource(KafkaUtils.createDataStream(page_topic), WatermarkStrategy.noWatermarks(), "page source")
 
     val mappedStream: DataStream[JSONObject] = source.map(JSON.parseObject(_))
     val withwaterMarkStream: DataStream[JSONObject] = mappedStream.assignTimestampsAndWatermarks(
@@ -56,7 +55,7 @@ object VisitBounceRateApp {
 
     val timeout = out.getSideOutput(tag)
     out.print()
-    val sink = kafkaUtils.createSink(bounceRateTopic)
+    val sink = KafkaUtils.createSink(bounceRateTopic)
     val output = timeout.union(out).map(_.toJSONString())
     output.sinkTo(sink)
     env.execute()

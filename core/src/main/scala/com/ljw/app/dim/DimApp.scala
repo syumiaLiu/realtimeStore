@@ -20,8 +20,7 @@ object DimApp {
 //    env.enableCheckpointing(3000)
     //only for test,cdc will read binlog after a success checkpoint.
     checkpointConfigInti(env)
-    val util = new KafkaUtils
-    val input = env.fromSource(util.createDataStream("maxwell",
+    val input = env.fromSource(KafkaUtils.createDataStream("maxwell",
       "dim"),
       WatermarkStrategy.noWatermarks(), "topic_db")
 

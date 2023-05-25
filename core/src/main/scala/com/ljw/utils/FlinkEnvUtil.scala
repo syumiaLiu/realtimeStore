@@ -1,7 +1,7 @@
 package com.ljw.utils
 
 import org.apache.flink.api.common.restartstrategy.RestartStrategies
-import org.apache.flink.configuration.Configuration
+import org.apache.flink.configuration.{Configuration, RestOptions}
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
@@ -13,7 +13,7 @@ object FlinkEnvUtil {
 
     def createLocalEnv(useCheckpoint: Boolean , useFSBackend: Boolean): StreamExecutionEnvironment = {
       val conf = new Configuration
-      conf setInteger("rest.port", 9091)
+      conf setString (RestOptions.BIND_PORT, "9091-10000")
       val env = StreamExecutionEnvironment
         .createLocalEnvironmentWithWebUI(conf)
       if(useCheckpoint) checkpointConfigInti(env)

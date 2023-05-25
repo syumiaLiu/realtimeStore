@@ -13,12 +13,11 @@ object BaseLogApp {
     val env = createLocalEnv()
     checkpointConfigInti(env)
     useHDFSBackend(env)
-    val kafkaUtils = new KafkaUtils
-    val source = env.fromSource(kafkaUtils.createDataStream(source_topic, groupId), WatermarkStrategy.noWatermarks(), "app log source")
+    val source = env.fromSource(KafkaUtils.createDataStream(source_topic, groupId), WatermarkStrategy.noWatermarks(), "app log source")
 
     val dirtyOut = new OutputTag[String]("dirty stream")
     val cleanStream = source process new JsonFilterProc
-    val dirtySink = kafkaUtils createSink dirty_topic
+    val dirtySink = KafkaUtils createSink dirty_topic
     cleanStream.getSideOutput(dirtyOut).sinkTo(dirtySink)
 
     val out = cleanStream.map(JSON.parseObject(_))
@@ -32,11 +31,11 @@ object BaseLogApp {
     val actionTag = new OutputTag[String]("actionTag")
     val errorTag = new OutputTag[String]("errorTag")
 
-    val action_sink = kafkaUtils createSink action_topic
-    val display_sink = kafkaUtils createSink display_topic
-    val error_sink = kafkaUtils createSink error_topic
-    val start_sink = kafkaUtils createSink start_topic
-    val page_sink = kafkaUtils createSink page_topic
+    val action_sink = KafkaUtils createSink action_topic
+    val display_sink = KafkaUtils createSink display_topic
+    val error_sink = KafkaUtils createSink error_topic
+    val start_sink = KafkaUtils createSink start_topic
+    val page_sink = KafkaUtils createSink page_topic
 
     out sinkTo page_sink
     out.getSideOutput(startTag).sinkTo(start_sink)

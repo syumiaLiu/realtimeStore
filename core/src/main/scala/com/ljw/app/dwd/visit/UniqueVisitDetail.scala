@@ -15,15 +15,14 @@ object UniqueVisitDetail {
     val env = createLocalEnv()
     checkpointConfigInti(env)
     useHDFSBackend(env)
-    val kafkaUtils = new KafkaUtils
-    val source: DataStream[String] = env fromSource(kafkaUtils.createDataStream(page_topic), WatermarkStrategy.noWatermarks(), "page source")
+    val source: DataStream[String] = env fromSource(KafkaUtils.createDataStream(page_topic), WatermarkStrategy.noWatermarks(), "page source")
     val out = source.map(JSON.parseObject(_))
       .filter(_.getJSONObject("page").getString("last_page_id") == null)
       .keyBy(_.getJSONObject("common").getString("mid"))
       .filter(new UniqueVisitProc)
       .map(_.toJSONString())
 
-    val sink = kafkaUtils.createSink(uv_topic)
+    val sink = KafkaUtils.createSink(uv_topic)
     out.sinkTo(sink)
     env.execute("uv filter")
   }

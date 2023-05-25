@@ -7,7 +7,7 @@ import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsIni
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.connectors.kafka.partitioner.FlinkFixedPartitioner
 
-class KafkaUtils {
+object KafkaUtils {
   private val bootstrap = "hadoop01:9092"
   private val group = "group1"
   def createDataStream(bootstrap: String,topic:String,group: String): KafkaSource[String] = {

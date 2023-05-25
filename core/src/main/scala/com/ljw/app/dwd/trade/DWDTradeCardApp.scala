@@ -1,5 +1,6 @@
 package com.ljw.app.dwd.trade
 
+import com.ljw.utils
 import com.ljw.utils.MysqlUtils.getBaseDicLookUpDDL
 import com.ljw.utils.{FlinkEnvUtil, KafkaUtils}
 import org.apache.flink.table.api.{AnyWithOperations, FieldExpression, Table}
@@ -9,10 +10,9 @@ object DWDTradeCardApp {
   def main(args: Array[String]): Unit = {
     val env = FlinkEnvUtil.createLocalEnv()
     val tEnv = StreamTableEnvironment.create(env)
-    val utils = new KafkaUtils
     //create data table
     tEnv.executeSql("create table topic_db(`database` string, `table` string, `type` string , `data`map<string,string> , `old` map<string,string> , `ts` string, `proc_time` as " +
-      "PROCTIME())" + utils.createDDLSource("maxwell", "dwdTradeCard"))
+      "PROCTIME())" + KafkaUtils.createDDLSource("maxwell", "dwdTradeCard"))
 
     val cartAdd = tEnv.sqlQuery(
       "select data['id']  id , data['user_id'] user_id , data['sku_id'] sku_id , data['source_id'] source_id ,data['source_type'] source_type ," +
@@ -33,7 +33,7 @@ object DWDTradeCardApp {
     //check data by console
 //    tEnv.from("result_table").select($"*").execute().print()
     tEnv.executeSql("create table dwd_trade_cart_add  (id string,user_id string,sku_id string, source_id string ,source_type_code string ,source_type_name string, sku_num string" +
-      " ,ts string)" + utils.createDDLSink("dwd_trade_cart_add"))
+      " ,ts string)" + KafkaUtils.createDDLSink("dwd_trade_cart_add"))
 
     tEnv.executeSql("insert into dwd_trade_cart_add select * from result_table")
   }

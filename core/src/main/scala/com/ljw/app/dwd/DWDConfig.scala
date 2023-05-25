@@ -13,4 +13,7 @@ object DWDConfig {
 
   val uv_topic = "traffic_unique_visitor_detail"
   val bounceRateTopic = "dwd_traffic_user_jump_detail"
+
+
+  val CANCEL_SOURCE_ID = "1003"
 }

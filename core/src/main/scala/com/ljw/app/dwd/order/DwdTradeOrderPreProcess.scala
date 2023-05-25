@@ -1,5 +1,6 @@
 package com.ljw.app.dwd.order
 
+import com.ljw.app.dwd.DWDTableSchema
 import com.ljw.utils.MysqlUtils.getBaseDicLookUpDDL
 import com.ljw.utils.{FlinkEnvUtil, KafkaUtils}
 import org.apache.flink.api.scala._
@@ -14,10 +15,8 @@ object DwdTradeOrderPreProcess {
     val tEnv = StreamTableEnvironment create env
     tEnv.getConfig.setIdleStateRetention(Duration.ofMinutes(30))
 
-    val utils = new KafkaUtils
     //create data table
-    tEnv.executeSql("create table topic_db(`database` string, `table` string, `type` string , `data`map<string,string> , `old` map<string,string> , `ts` string, `proc_time` as " +
-      "PROCTIME())" + utils.createDDLSource("maxwell", "orderPreProc"))
+    tEnv.executeSql(s"create table topic_db(${DWDTableSchema.DWD_INPUT_SCHEMA_WIHT_TIME})" + KafkaUtils.createDDLSource("maxwell", "orderPreProc"))
 
     //order-detail
     val order_detail = tEnv.sqlQuery("select " +
@@ -175,53 +174,10 @@ object DwdTradeOrderPreProcess {
 
     //create upsert sink
       tEnv.executeSql("create table dwd_order_detail_proc(" +
-        "  `id` string," +
-        "  `order_id` string," +
-        "  `sku_id` string," +
-        "  `sku_name` string," +
-        "  `img_url` string," +
-        "  `order_price` string," +
-        "  `sku_num` string," +
-        "  `create_time` string," +
-        "  `source_type` string," +
-        "  `source_id` string," +
-        "  `split_total_amount` string," +
-        "  `split_activity_amount` string," +
-        "  `split_coupon_amount` string," +
-        "  `consignee` string," +
-        "  `consignee_tel` string," +
-        "  `total_amount` string," +
-        "  `order_status` string," +
-        "  `user_id` string," +
-        "  `payment_way` string," +
-        "  `delivery_address` string," +
-        "  `order_comment` string," +
-        "  `out_trade_no` string," +
-        "  `trade_body` string," +
-        "  `operate_time` string," +
-        "  `expire_time` string," +
-        "  `process_status` string," +
-        "  `tracking_no` string," +
-        "  `parent_order_id` string," +
-        "  `province_id` string," +
-        "  `activity_reduce_amount` string," +
-        "  `coupon_reduce_amount` string," +
-        "  `original_total_amount` string," +
-        "  `feight_fee` string," +
-        "  `feight_fee_reduce` string," +
-        "  `refundable_time` string," +
-        "  `order_detail_activity_id` string," +
-        "  `activity_id` string," +
-        "  `activity_rule_id` string," +
-        "  `order_detail_coupon_id` string," +
-        "  `coupon_id` string," +
-        "  `coupon_use_id` string," +
-        "  `type` string," +
-        "  `old` map<string,string>," +
-        "  `source_type_name` string," +
-        "  `order_status_name` string ," +
+        DWDTableSchema.DWD_ORDER_DETAIL_PROC_SCHEMA +
+       "," +
         "primary key(id) not enforced)" +
-        s"${utils.createUpsertDDLSink("dwd_order_detail_proc")}")
+        s"${KafkaUtils.createUpsertDDLSink("dwd_order_detail_proc")}")
 
         tEnv.executeSql("insert into dwd_order_detail_proc select * from resTable")
     //table data test
