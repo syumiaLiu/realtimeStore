@@ -54,7 +54,7 @@ object VisitBounceRateApp {
     })
 
     val timeout = out.getSideOutput(tag)
-    out.print()
+//    out.print()
     val sink = KafkaUtils.createSink(bounceRateTopic)
     val output = timeout.union(out).map(_.toJSONString())
     output.sinkTo(sink)

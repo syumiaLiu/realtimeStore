@@ -1,7 +1,7 @@
 package com.ljw.utils
 
 
-import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
+import java.time.{Instant, LocalDateTime, ZoneOffset, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 
 object DataFormatUtil {
@@ -25,5 +25,14 @@ object DataFormatUtil {
     toTimeStamp(dataStr,false)
   }
 
+  def toYmdHms(timeStamp: Long) : String = {
+      LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp),ZoneOffset.of("+8")).format(dtfFull)
+
+  }
+
+  def toYmd(timeStamp: Long): String = {
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(timeStamp), ZoneOffset.of("+8")).format(dtf)
+
+  }
   
 }

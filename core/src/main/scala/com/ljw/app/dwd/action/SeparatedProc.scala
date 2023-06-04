@@ -52,11 +52,9 @@ class SeparatedProc extends ProcessFunction[JSONObject, String] {
           ctx output (actionTag , nObject.toJSONString())
         }
       }
+      value remove "actions"
+      value remove "displays"
+      out collect value.toJSONString()
     }
-
-    value remove "actions"
-    value remove "displays"
-    out collect value.toJSONString()
-
   }
 }
